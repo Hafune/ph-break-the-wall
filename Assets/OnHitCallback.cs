@@ -4,7 +4,8 @@ using UnityEngine.Events;
 
 public class OnHitCallback : MonoBehaviour
 {
-    [SerializeField] private UnityEvent<Collider> _onHit;
+    [SerializeField] private UnityEvent<Vector3> _onHit;
+    [SerializeField] private Camera _camera;
 
     private Brick[] _bricks;
     private float _outOfWallBrickCount;
@@ -16,6 +17,7 @@ public class OnHitCallback : MonoBehaviour
         _bricks.ForEach(brick =>
         {
             brick.SetOnHitEvent(_onHit);
+            brick.SetCamera(_camera);
             brick.SetOutOfWallEvent(() =>
             {
                 _outOfWallBrickCount++;

@@ -1,20 +1,19 @@
 using System.Collections;
 using DG.Tweening;
-using Lib;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 public class Hand : MonoBehaviour
 {
     private static readonly int Hit = Animator.StringToHash("Hit");
 
     [SerializeField] private Animator _hand;
+    [SerializeField] private ParticleSystem _hitEffect;
+    [SerializeField] private float _hitPower = 50f;
 
     private Vector3 _defaultPosition;
     private Quaternion _defaultRotation;
     private float _defaultDistance;
-    [SerializeField] private float _hitPower = 50f;
     private Transform _parent;
     private bool _isReady = true;
 
@@ -22,17 +21,17 @@ public class Hand : MonoBehaviour
 
     public Vector3 Position => _hand.transform.position;
 
-    public void HitTo(Collider box)
+    public void HitTo(Vector3 position)
     {
         if (_isReady)
-            StartCoroutine(DealHit(box));
+            StartCoroutine(DealHit(position));
     }
 
-    private IEnumerator DealHit(Collider box)
+    private IEnumerator DealHit(Vector3 position)
     {
         _isReady = false;
 
-        var direction = box.transform.position - _defaultPosition;
+        var direction = position - _defaultPosition;
         float distance = direction.magnitude - _defaultDistance;
         var newPosition = _defaultPosition + direction.normalized * distance;
         var skipFrame = new WaitForNextFrameUnit();
@@ -50,11 +49,12 @@ public class Hand : MonoBehaviour
         sequence.Append(_parent.DOMove(newPosition, halfTime)
                 .OnComplete(() =>
                 {
-                    float totalPower = _hitPower * Time.deltaTime * .1f;
-                    var explosionPosition = box.transform.position - transform.forward;
-                    box.attachedRigidbody.AddExplosionForce(totalPower, explosionPosition, 2);
-                    box.attachedRigidbody.isKinematic = false;
-                    int count = Physics.OverlapSphereNonAlloc(box.transform.position, 2, arr);
+                    float totalPower = _hitPower * Time.deltaTime * .3f;
+                    var explosionPosition = position;
+
+                    int count = Physics.OverlapSphereNonAlloc(position, 2, arr);
+                    _hitEffect.Play();
+                    _hitEffect.transform.position = explosionPosition;
 
                     for (int i = 0; i < count; i++)
                     {
@@ -68,7 +68,7 @@ public class Hand : MonoBehaviour
                 }))
             .Append(_parent.DOMove(_defaultPosition, halfTime));
 
-        sequence.Insert(0, _parent.DOLookAt(box.transform.position, halfTime))
+        sequence.Insert(0, _parent.DOLookAt(position, halfTime))
             .Append(_parent.DORotateQuaternion(_defaultRotation, halfTime));
 
         sequence.OnComplete(() => _isReady = true);
@@ -76,7 +76,7 @@ public class Hand : MonoBehaviour
 
     private void Start()
     {
-        _parent = _hand.transform.parent;
+        _parent = transform.parent;
         _defaultPosition = _parent.position;
         _defaultRotation = _parent.rotation;
 
