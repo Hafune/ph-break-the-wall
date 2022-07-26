@@ -9,8 +9,11 @@ public class Hand : MonoBehaviour
 {
     private static readonly int Hit = Animator.StringToHash("Hit");
 
+    [SerializeField] private Camera _camera;
     [SerializeField] private ParticleSystem _hitEffect;
     [SerializeField] private CinemachineShake _cinemachineShake;
+    [SerializeField] private PopupReward _popupReward;
+    [SerializeField] private Transform _popupRewardContainer;
     [SerializeField] private float _hitPower = 50f;
 
     private Animator _animator;
@@ -60,6 +63,9 @@ public class Hand : MonoBehaviour
                     _hitEffect.Play();
                     _hitEffect.transform.position = explosionPosition;
 
+                    var pos = _camera.WorldToScreenPoint(position);
+                    Instantiate(_popupReward, pos, Quaternion.identity, _popupRewardContainer);
+
                     for (int i = 0; i < count; i++)
                     {
                         if (arr[i].attachedRigidbody)
@@ -81,7 +87,7 @@ public class Hand : MonoBehaviour
     private void Start()
     {
         _animator = GetComponent<Animator>();
-        
+
         _parent = transform.parent;
         _defaultPosition = _parent.position;
         _defaultRotation = _parent.rotation;
@@ -89,9 +95,12 @@ public class Hand : MonoBehaviour
         Physics.Raycast(_parent.position, _parent.forward, out RaycastHit info);
 
         _defaultDistance = info.distance;
-        
+
+        Assert.IsNotNull(_camera);
         Assert.IsNotNull(_cinemachineShake);
         Assert.IsNotNull(_animator);
         Assert.IsNotNull(_hitEffect);
+        Assert.IsNotNull(_popupReward);
+        Assert.IsNotNull(_popupRewardContainer);
     }
 }
