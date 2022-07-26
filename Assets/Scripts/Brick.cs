@@ -11,6 +11,7 @@ public class Brick : MonoBehaviour, IPointerDownHandler
     private Camera _camera;
     private Vector3 _basePosition;
     private bool _inWall = true;
+    private float _outOfWallDistance;
 
     public void SetOnHitEvent(UnityEvent<Vector3> onHit) => _onHit = onHit;
 
@@ -26,14 +27,18 @@ public class Brick : MonoBehaviour, IPointerDownHandler
             _onHit.Invoke(info.point);
     }
 
-    private void Start() => _basePosition = transform.position;
+    private void Start()
+    {
+        _basePosition = transform.position;
+        _outOfWallDistance = GetComponent<Collider>().bounds.size.sqrMagnitude;
+    }
 
     private void OnCollisionEnter()
     {
         if (!_inWall)
             return;
 
-        _inWall = (_basePosition - transform.position).magnitude > 2;
+        _inWall = (_basePosition - transform.position).sqrMagnitude > _outOfWallDistance;
 
         if (!_inWall)
             _onOutOfWall.Invoke();
