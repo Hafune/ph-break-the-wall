@@ -32,5 +32,7 @@ public class Hands : MonoBehaviour
     {
         Assert.IsNotNull(_leftHand);
         Assert.IsNotNull(_rightHand);
+
+        Application.targetFrameRate = 1000;
     }
 }
