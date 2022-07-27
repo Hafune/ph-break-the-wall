@@ -1,11 +1,13 @@
 using System.Collections;
+using JetBrains.Annotations;
 using Lib;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class Wall : MonoBehaviour
 {
-    [SerializeField] private UnityEvent<Vector3> _onHit;
+    [SerializeField] private UnityEvent<Vector3> _onClick;
+    [SerializeField] private UnityEvent _onBreak;
     [SerializeField] private Camera _camera;
 
     private Brick[] _bricks;
@@ -18,7 +20,7 @@ public class Wall : MonoBehaviour
         _bricks = GetComponentsInChildren<Brick>();
         _bricks.ForEach(brick =>
         {
-            brick.SetOnHitEvent(_onHit);
+            brick.SetOnHitEvent(_onClick);
             brick.SetCamera(_camera);
             brick.SetOutOfWallEvent(() =>
             {
@@ -37,6 +39,7 @@ public class Wall : MonoBehaviour
 
         _bricks.ForEach(brick => brick.GetComponent<Rigidbody>().isKinematic = false);
         StartCoroutine(DestroyWall());
+        _onBreak.Invoke();
     }
 
     private IEnumerator DestroyWall()

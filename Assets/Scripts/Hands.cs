@@ -43,6 +43,11 @@ public class Hands : MonoBehaviour
         Instantiate(_popupReward, pos, Quaternion.identity, _popupRewardCanvas.transform);
     }
 
+    public void SetMoveAnimation()
+    {
+        
+    }
+
     private void Start()
     {
         _camera = GetComponent<Camera>();

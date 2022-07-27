@@ -18764,13 +18764,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f5165230a355474c9fe1bebad6bd787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onHit:
+  _onClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 963194231}
         m_TargetAssemblyTypeName: Hands, Assembly-CSharp
         m_MethodName: HitTo
         m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onBreak:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 963194234}
+        m_TargetAssemblyTypeName: MoveToNextWall, Assembly-CSharp
+        m_MethodName: BeginMovement
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -21567,6 +21582,7 @@ GameObject:
   - component: {fileID: 963194231}
   - component: {fileID: 963194232}
   - component: {fileID: 963194233}
+  - component: {fileID: 963194234}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -21730,6 +21746,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &963194234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b041b2fae55f3d44a1ce0b032c10ce4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hands: {fileID: 963194231}
+  _wall: {fileID: 802939894}
+  _nextWall: {fileID: 1413471266}
 --- !u!1001 &963323682
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31767,7 +31798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f5165230a355474c9fe1bebad6bd787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onHit:
+  _onClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 963194231}
@@ -31777,6 +31808,21 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onBreak:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

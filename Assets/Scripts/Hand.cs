@@ -15,7 +15,7 @@ public class Hand : MonoBehaviour
     private Animator _animator;
     private Vector3 _defaultPosition;
     private Quaternion _defaultRotation;
-    private Transform _parent;
+    private Transform _parentTransform;
     private float _defaultDistance;
     private bool _isReady = true;
     private Collider[] _hitBuffer = new Collider[20];
@@ -34,9 +34,9 @@ public class Hand : MonoBehaviour
     {
         _isReady = false;
 
-        var direction = position - _defaultPosition;
+        var direction = position - _parentTransform.position;
         float distance = direction.magnitude - _defaultDistance;
-        var newPosition = _defaultPosition + direction.normalized * distance;
+        var newPosition = _parentTransform.position + direction.normalized * distance;
         var skipFrame = new WaitForNextFrameUnit();
 
         _animator.SetTrigger(Hit);
@@ -47,7 +47,7 @@ public class Hand : MonoBehaviour
         float halfTime = time / 2;
 
         var sequence = DOTween.Sequence();
-        sequence.Append(_parent.DOMove(newPosition, halfTime)
+        sequence.Append(_parentTransform.DOMove(newPosition, halfTime)
                 .OnComplete(() =>
                 {
                     float totalPower = _hitPower * Time.deltaTime * .3f;
@@ -66,10 +66,10 @@ public class Hand : MonoBehaviour
 
                     _onHit.Invoke(position);
                 }))
-            .Append(_parent.DOMove(_defaultPosition, halfTime));
+            .Append(_parentTransform.DOLocalMove(_defaultPosition, halfTime));
 
-        sequence.Insert(0, _parent.DOLookAt(position, halfTime))
-            .Append(_parent.DORotateQuaternion(_defaultRotation, halfTime));
+        sequence.Insert(0, _parentTransform.DOLookAt(position, halfTime))
+            .Append(_parentTransform.DORotateQuaternion(_defaultRotation, halfTime));
 
         sequence.OnComplete(() => _isReady = true);
     }
@@ -78,11 +78,11 @@ public class Hand : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
 
-        _parent = transform.parent;
-        _defaultPosition = _parent.position;
-        _defaultRotation = _parent.rotation;
+        _parentTransform = transform.parent;
+        _defaultPosition = _parentTransform.localPosition;
+        _defaultRotation = _parentTransform.rotation;
 
-        Physics.Raycast(_parent.position, _parent.forward, out RaycastHit info);
+        Physics.Raycast(_parentTransform.position, _parentTransform.forward, out RaycastHit info);
 
         _defaultDistance = info.distance;
     }
