@@ -2,18 +2,14 @@ using System.Collections;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Animator))]
 public class Hand : MonoBehaviour
 {
     private static readonly int Hit = Animator.StringToHash("Hit");
 
-    [SerializeField] private Camera _camera;
-    [SerializeField] private ParticleSystem _hitEffect;
-    [SerializeField] private CinemachineShake _cinemachineShake;
-    [SerializeField] private PopupReward _popupReward;
-    [SerializeField] private Transform _popupRewardContainer;
+    [SerializeField] private UnityEvent<Vector3> _onHit;
     [SerializeField] private float _hitPower = 50f;
 
     private Animator _animator;
@@ -22,6 +18,7 @@ public class Hand : MonoBehaviour
     private Transform _parent;
     private float _defaultDistance;
     private bool _isReady = true;
+    private Collider[] _hitBuffer = new Collider[20];
 
     public bool IsReady => _isReady;
 
@@ -49,32 +46,25 @@ public class Hand : MonoBehaviour
         float time = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
         float halfTime = time / 2;
 
-        var arr = new Collider[20];
-
         var sequence = DOTween.Sequence();
         sequence.Append(_parent.DOMove(newPosition, halfTime)
                 .OnComplete(() =>
                 {
                     float totalPower = _hitPower * Time.deltaTime * .3f;
-                    var explosionPosition = position;
 
-                    int count = Physics.OverlapSphereNonAlloc(position, 2, arr);
-                    _cinemachineShake.Shake();
-                    _hitEffect.Play();
-                    _hitEffect.transform.position = explosionPosition;
-
-                    var pos = _camera.WorldToScreenPoint(position);
-                    Instantiate(_popupReward, pos, Quaternion.identity, _popupRewardContainer);
+                    int count = Physics.OverlapSphereNonAlloc(position, 2, _hitBuffer);
 
                     for (int i = 0; i < count; i++)
                     {
-                        if (arr[i].attachedRigidbody)
-                        {
-                            arr[i].attachedRigidbody
-                                .AddExplosionForce(totalPower, explosionPosition, 2);
-                            arr[i].attachedRigidbody.isKinematic = false;
-                        }
+                        if (!_hitBuffer[i].attachedRigidbody)
+                            continue;
+
+                        _hitBuffer[i].attachedRigidbody.isKinematic = false;
+                        _hitBuffer[i].attachedRigidbody
+                            .AddExplosionForce(totalPower, position, 2);
                     }
+
+                    _onHit.Invoke(position);
                 }))
             .Append(_parent.DOMove(_defaultPosition, halfTime));
 
@@ -95,12 +85,5 @@ public class Hand : MonoBehaviour
         Physics.Raycast(_parent.position, _parent.forward, out RaycastHit info);
 
         _defaultDistance = info.distance;
-
-        Assert.IsNotNull(_camera);
-        Assert.IsNotNull(_cinemachineShake);
-        Assert.IsNotNull(_animator);
-        Assert.IsNotNull(_hitEffect);
-        Assert.IsNotNull(_popupReward);
-        Assert.IsNotNull(_popupRewardContainer);
     }
 }

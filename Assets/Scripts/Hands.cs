@@ -1,10 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
 
+[RequireComponent(typeof(Camera))]
 public class Hands : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem _hitEffect;
+    [SerializeField] private CinemachineShake _cinemachineShake;
+    [SerializeField] private PopupReward _popupReward;
+    [SerializeField] private Canvas _popupRewardCanvas;
     [SerializeField] private Hand _leftHand;
     [SerializeField] private Hand _rightHand;
+
+    private Camera _camera;
 
     public void HitTo(Vector3 position)
     {
@@ -27,8 +34,23 @@ public class Hands : MonoBehaviour
         }
     }
 
+    public void LaunchHitProcesses(Vector3 hitPosition)
+    {
+        _cinemachineShake.Shake();
+        Instantiate(_hitEffect).transform.position = hitPosition;
+
+        var pos = _camera.WorldToScreenPoint(hitPosition);
+        Instantiate(_popupReward, pos, Quaternion.identity, _popupRewardCanvas.transform);
+    }
+
     private void Start()
     {
+        _camera = GetComponent<Camera>();
+
+        Assert.IsNotNull(_hitEffect);
+        Assert.IsNotNull(_cinemachineShake);
+        Assert.IsNotNull(_popupReward);
+        Assert.IsNotNull(_popupRewardCanvas);
         Assert.IsNotNull(_leftHand);
         Assert.IsNotNull(_rightHand);
 
