@@ -10,7 +10,9 @@ public class Hands : MonoBehaviour
     [SerializeField] private Canvas _popupRewardCanvas;
     [SerializeField] private Hand _leftHand;
     [SerializeField] private Hand _rightHand;
+    [SerializeField] private int _hitPower = 1;
 
+    private Collider[] _hitBuffer = new Collider[20];
     private Camera _camera;
 
     public void HitTo(Vector3 position)
@@ -41,11 +43,24 @@ public class Hands : MonoBehaviour
 
         var pos = _camera.WorldToScreenPoint(hitPosition);
         Instantiate(_popupReward, pos, Quaternion.identity, _popupRewardCanvas.transform);
+
+        float totalPower = _hitPower;
+
+        int count = Physics.OverlapSphereNonAlloc(hitPosition, 2, _hitBuffer);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (!_hitBuffer[i].attachedRigidbody)
+                continue;
+
+            _hitBuffer[i].attachedRigidbody.isKinematic = false;
+            _hitBuffer[i].attachedRigidbody
+                .AddExplosionForce(totalPower, hitPosition, 3, 0, ForceMode.VelocityChange);
+        }
     }
 
     public void SetMoveAnimation()
     {
-        
     }
 
     private void Start()

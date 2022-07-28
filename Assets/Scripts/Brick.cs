@@ -38,7 +38,7 @@ public class Brick : MonoBehaviour, IPointerDownHandler
         if (!_inWall)
             return;
 
-        _inWall = (_basePosition - transform.position).sqrMagnitude > _outOfWallDistance;
+        _inWall = (_basePosition - transform.position).sqrMagnitude < _outOfWallDistance;
 
         if (!_inWall)
             _onOutOfWall.Invoke();

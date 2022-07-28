@@ -12,7 +12,7 @@ public class Wall : MonoBehaviour
 
     private Brick[] _bricks;
     private float _outOfWallBrickCount;
-    private float _percentToDestroy = .7f;
+    private float _percentToDestroy = .4f;
     private bool _wallIsBroken = false;
 
     private void Start()
