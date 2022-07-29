@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DG.Tweening;
 using Unity.VisualScripting;
@@ -8,6 +9,10 @@ using UnityEngine.Events;
 public class Hand : MonoBehaviour
 {
     private static readonly int Hit = Animator.StringToHash("Hit");
+    private static readonly int IsMove = Animator.StringToHash("IsMove");
+    private static readonly int HitSupport = Animator.StringToHash("HitSupport");
+
+    public Action _onHitCompleted;
 
     [SerializeField] private UnityEvent<Vector3> _onHit;
 
@@ -27,6 +32,12 @@ public class Hand : MonoBehaviour
         if (_isReady)
             StartCoroutine(DealHit(position));
     }
+
+    public void SetMoveAnimation() => _animator.SetBool(IsMove, true);
+
+    public void SetIdleAnimation() => _animator.SetBool(IsMove, false);
+
+    public void PlayHitSupportAnimation() => _animator.SetTrigger(HitSupport);
 
     private IEnumerator DealHit(Vector3 position)
     {
@@ -52,7 +63,11 @@ public class Hand : MonoBehaviour
         sequence.Insert(0, _pivot.DOLookAt(position, halfTime))
             .Append(_pivot.DORotateQuaternion(_defaultRotation, halfTime));
 
-        sequence.OnComplete(() => _isReady = true);
+        sequence.OnComplete(() =>
+        {
+            _isReady = true;
+            _onHitCompleted.Invoke();
+        });
     }
 
     private void Start()

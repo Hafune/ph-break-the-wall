@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
@@ -71,5 +72,22 @@ namespace Lib
 
         public static Vector2 ReflectedAlong(this Vector2 vector, Vector2 normal) =>
             (vector + vector.ReflectedBy(normal)) / 2;
+
+        public static int OverlapCapsuleNonAlloc(this CapsuleCollider col, Collider[] _hitBuffer)
+        {
+            var direction = new Vector3 {[col.direction] = 1};
+            var offset = col.height / 2 - col.radius;
+            var localPoint0 = col.center - direction * offset;
+            var localPoint1 = col.center + direction * offset;
+
+            var point0 = col.transform.TransformPoint(localPoint0);
+            var point1 = col.transform.TransformPoint(localPoint1);
+
+            var rawRadius = col.transform.TransformVector(col.radius, col.radius, col.radius);
+            var radius = Enumerable.Range(0, 3).Select(xyz => xyz == col.direction ? 0 : rawRadius[xyz])
+                .Select(Mathf.Abs).Max();
+
+            return Physics.OverlapCapsuleNonAlloc(point0, point1, radius, _hitBuffer);
+        }
     }
 }

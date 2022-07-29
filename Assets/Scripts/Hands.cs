@@ -1,79 +1,132 @@
-﻿using UnityEngine;
+﻿using Cinemachine;
+using Lib;
+using UnityEngine;
 using UnityEngine.Assertions;
 
-[RequireComponent(typeof(Camera))]
 public class Hands : MonoBehaviour
 {
+    private static readonly int IsMove = Animator.StringToHash("IsMove");
+
+    [SerializeField] private CapsuleCollider _hitArea;
+    [SerializeField] private Transform _forcePoint;
     [SerializeField] private ParticleSystem _hitEffect;
-    [SerializeField] private CinemachineShake _cinemachineShake;
     [SerializeField] private PopupReward _popupReward;
     [SerializeField] private Canvas _popupRewardCanvas;
     [SerializeField] private Hand _leftHand;
     [SerializeField] private Hand _rightHand;
     [SerializeField] private int _hitPower = 1;
+    [SerializeField] private Camera _camera;
 
-    private Collider[] _hitBuffer = new Collider[20];
-    private Camera _camera;
+    private Collider[] _hitBuffer = new Collider[50];
+    private Animator _animator;
+    private bool _hasNextHit;
+    private Vector3 _nextHitPosition;
+    private CinemachineImpulseSource _impulse;
 
     public void HitTo(Vector3 position)
     {
+        if (_animator.GetBool(IsMove))
+            return;
+
+        if (!_leftHand.IsReady || !_rightHand.IsReady)
+        {
+            _hasNextHit = true;
+            _nextHitPosition = position;
+            return;
+        }
+
         var leftDistance = (position - _leftHand.Position).sqrMagnitude;
         var rightDistance = (position - _rightHand.Position).sqrMagnitude;
 
         if (leftDistance < rightDistance)
         {
-            if (_leftHand.IsReady)
-                _leftHand.HitTo(position);
-            else if (_rightHand.IsReady)
-                _rightHand.HitTo(position);
+            _rightHand.PlayHitSupportAnimation();
+            _leftHand.HitTo(position);
         }
         else
         {
-            if (_rightHand.IsReady)
-                _rightHand.HitTo(position);
-            else if (_leftHand.IsReady)
-                _leftHand.HitTo(position);
+            _leftHand.PlayHitSupportAnimation();
+            _rightHand.HitTo(position);
         }
     }
 
     public void LaunchHitProcesses(Vector3 hitPosition)
     {
-        _cinemachineShake.Shake();
         Instantiate(_hitEffect).transform.position = hitPosition;
 
         var pos = _camera.WorldToScreenPoint(hitPosition);
         Instantiate(_popupReward, pos, Quaternion.identity, _popupRewardCanvas.transform);
 
-        float totalPower = _hitPower;
+        _impulse.GenerateImpulse((hitPosition - transform.position).normalized / 2);
 
-        int count = Physics.OverlapSphereNonAlloc(hitPosition, 2, _hitBuffer);
+        float totalPower = _hitPower;
+        _hitArea.transform.position = hitPosition;
+        _forcePoint.transform.parent.position = hitPosition;
+
+        var count = _hitArea.OverlapCapsuleNonAlloc(_hitBuffer);
 
         for (int i = 0; i < count; i++)
         {
-            if (!_hitBuffer[i].attachedRigidbody)
+            var body = _hitBuffer[i].attachedRigidbody;
+            if (!body)
                 continue;
 
-            _hitBuffer[i].attachedRigidbody.isKinematic = false;
-            _hitBuffer[i].attachedRigidbody
-                .AddExplosionForce(totalPower, hitPosition, 3, 0, ForceMode.VelocityChange);
+            body.isKinematic = false;
+
+            var direction = (body.position - _forcePoint.position).normalized;
+            body.AddForce(direction * totalPower, ForceMode.VelocityChange);
         }
     }
 
     public void SetMoveAnimation()
     {
+        _leftHand.SetMoveAnimation();
+        _rightHand.SetMoveAnimation();
+        _animator.SetBool(IsMove, true);
+    }
+
+    public void SetIdleAnimation()
+    {
+        _leftHand.SetIdleAnimation();
+        _rightHand.SetIdleAnimation();
+        _animator.SetBool(IsMove, false);
     }
 
     private void Start()
     {
-        _camera = GetComponent<Camera>();
+        _hitArea.gameObject.SetActive(false);
+        _forcePoint.gameObject.SetActive(false);
+
+        _animator = GetComponent<Animator>();
+        _impulse = GetComponent<CinemachineImpulseSource>();
 
         Assert.IsNotNull(_hitEffect);
-        Assert.IsNotNull(_cinemachineShake);
         Assert.IsNotNull(_popupReward);
         Assert.IsNotNull(_popupRewardCanvas);
         Assert.IsNotNull(_leftHand);
         Assert.IsNotNull(_rightHand);
 
         Application.targetFrameRate = 1000;
+    }
+
+    private void CheckNextHit()
+    {
+        if (!_hasNextHit)
+            return;
+
+        _hasNextHit = false;
+        HitTo(_nextHitPosition);
+    }
+
+    private void OnEnable()
+    {
+        _leftHand._onHitCompleted += CheckNextHit;
+        _rightHand._onHitCompleted += CheckNextHit;
+    }
+
+    private void OnDisable()
+    {
+        _leftHand._onHitCompleted -= CheckNextHit;
+        _rightHand._onHitCompleted -= CheckNextHit;
     }
 }
