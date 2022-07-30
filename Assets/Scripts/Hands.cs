@@ -7,21 +7,31 @@ public class Hands : MonoBehaviour
 {
     private static readonly int IsMove = Animator.StringToHash("IsMove");
 
-    [SerializeField] private CapsuleCollider _hitArea;
-    [SerializeField] private Transform _forcePoint;
-    [SerializeField] private ParticleSystem _hitEffect;
-    [SerializeField] private PopupReward _popupReward;
+    [SerializeField] private Camera _camera;
     [SerializeField] private Canvas _popupRewardCanvas;
+    [SerializeField] private CapsuleCollider _hitArea;
     [SerializeField] private Hand _leftHand;
     [SerializeField] private Hand _rightHand;
-    [SerializeField] private int _hitPower = 1;
-    [SerializeField] private Camera _camera;
+    [SerializeField] private ParticleSystem _hitEffect;
+    [SerializeField] private PopupReward _popupReward;
+    [SerializeField] private Transform _forcePoint;
+    [SerializeField] private int _attackSpeed = 3;
+    [SerializeField] private int _hitPower = 4;
 
-    private Collider[] _hitBuffer = new Collider[50];
     private Animator _animator;
-    private bool _hasNextHit;
-    private Vector3 _nextHitPosition;
     private CinemachineImpulseSource _impulse;
+    private Collider[] _hitBuffer = new Collider[50];
+    private Vector3 _nextHitPosition;
+    private bool _hasNextHit;
+    private float _hitPowerMultyplier = 10;
+
+    public int HitPower => _hitPower;
+    
+    public void AddHitPower() => _hitPower +=1;
+    
+    public int AttackSpeed => _attackSpeed;
+    
+    public void AddAttackSpeed() => _attackSpeed +=1;
 
     public void HitTo(Vector3 position)
     {
@@ -59,7 +69,7 @@ public class Hands : MonoBehaviour
 
         _impulse.GenerateImpulse((hitPosition - transform.position).normalized / 2);
 
-        float totalPower = _hitPower;
+        float totalPower = _hitPower * _hitPowerMultyplier;
         _hitArea.transform.position = hitPosition;
         _forcePoint.transform.parent.position = hitPosition;
 
