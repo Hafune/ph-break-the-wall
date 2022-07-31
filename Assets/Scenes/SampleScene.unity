@@ -5893,9 +5893,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BindingMode: 1
   m_FollowOffset: {x: 0, y: -0.7, z: 0}
-  m_XDamping: 0.1
-  m_YDamping: 0.1
-  m_ZDamping: 0.1
+  m_XDamping: 0
+  m_YDamping: 0
+  m_ZDamping: 0
   m_AngularDampingMode: 0
   m_PitchDamping: 0
   m_YawDamping: 0
@@ -11909,6 +11909,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 783877013}
     m_Modifications:
+    - target: {fileID: 5285915282749001423, guid: 76969ef45e2701941a27b845438fc26c, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5285915282749001423, guid: 76969ef45e2701941a27b845438fc26c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5285915283662406728, guid: 76969ef45e2701941a27b845438fc26c, type: 3}
       propertyPath: m_Name
       value: RightHand

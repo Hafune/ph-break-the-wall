@@ -6,6 +6,7 @@ using UnityEngine.Assertions;
 public class Hands : MonoBehaviour
 {
     private static readonly int IsMove = Animator.StringToHash("IsMove");
+    private static readonly int CycleOffset = Animator.StringToHash("CycleOffset");
 
     [SerializeField] private Camera _camera;
     [SerializeField] private Canvas _popupRewardCanvas;
@@ -24,14 +25,15 @@ public class Hands : MonoBehaviour
     private Vector3 _nextHitPosition;
     private bool _hasNextHit;
     private float _hitPowerMultyplier = 10;
+    private float _rightHandCycleOffset = .1f;
 
     public int HitPower => _hitPower;
-    
-    public void AddHitPower() => _hitPower +=1;
-    
+
+    public void AddHitPower() => _hitPower += 1;
+
     public int AttackSpeed => _attackSpeed;
-    
-    public void AddAttackSpeed() => _attackSpeed +=1;
+
+    public void AddAttackSpeed() => _attackSpeed += 1;
 
     public void HitTo(Vector3 position)
     {
@@ -104,18 +106,19 @@ public class Hands : MonoBehaviour
 
     private void Start()
     {
-        _hitArea.gameObject.SetActive(false);
-        _forcePoint.gameObject.SetActive(false);
-
-        _animator = GetComponent<Animator>();
-        _impulse = GetComponent<CinemachineImpulseSource>();
-
         Assert.IsNotNull(_hitEffect);
         Assert.IsNotNull(_popupReward);
         Assert.IsNotNull(_popupRewardCanvas);
         Assert.IsNotNull(_leftHand);
         Assert.IsNotNull(_rightHand);
 
+        _hitArea.gameObject.SetActive(false);
+        _forcePoint.gameObject.SetActive(false);
+
+        _animator = GetComponent<Animator>();
+        _impulse = GetComponent<CinemachineImpulseSource>();
+
+        _rightHand.GetComponent<Animator>().SetFloat(CycleOffset, _rightHandCycleOffset);
         Application.targetFrameRate = 1000;
     }
 
