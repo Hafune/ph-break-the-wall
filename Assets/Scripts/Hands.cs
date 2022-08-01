@@ -13,19 +13,23 @@ public class Hands : MonoBehaviour
     [SerializeField] private CapsuleCollider _hitArea;
     [SerializeField] private Hand _leftHand;
     [SerializeField] private Hand _rightHand;
-    [SerializeField] private ParticleSystem _hitEffect;
+    [SerializeField] private ParticlePool _particlePool;
     [SerializeField] private PopupReward _popupReward;
     [SerializeField] private Transform _forcePoint;
     [SerializeField] private int _attackSpeed = 3;
     [SerializeField] private int _hitPower = 4;
 
     private Animator _animator;
+    private Animator _leftHandAnimator;
+    private Animator _rightHandAnimator;
     private CinemachineImpulseSource _impulse;
     private Collider[] _hitBuffer = new Collider[50];
     private Vector3 _nextHitPosition;
     private bool _hasNextHit;
-    private float _hitPowerMultyplier = 10;
-    private float _rightHandCycleOffset = .1f;
+    private float _baseAttackSpeed = .7f;
+    private float _attackSpeedMultiplier = .1f;
+    private float _hitPowerMultiplier = 2;
+    private float _cycleOffset = .1f;
 
     public int HitPower => _hitPower;
 
@@ -33,7 +37,11 @@ public class Hands : MonoBehaviour
 
     public int AttackSpeed => _attackSpeed;
 
-    public void AddAttackSpeed() => _attackSpeed += 1;
+    public void AddAttackSpeed()
+    {
+        _attackSpeed += 1;
+        UpdateAttackSpeed();
+    }
 
     public void HitTo(Vector3 position)
     {
@@ -64,14 +72,14 @@ public class Hands : MonoBehaviour
 
     public void LaunchHitProcesses(Vector3 hitPosition)
     {
-        Instantiate(_hitEffect).transform.position = hitPosition;
+        _particlePool.GetEffect().transform.position = hitPosition;
 
         var pos = _camera.WorldToScreenPoint(hitPosition);
         Instantiate(_popupReward, pos, Quaternion.identity, _popupRewardCanvas.transform);
 
         _impulse.GenerateImpulse((hitPosition - transform.position).normalized / 2);
 
-        float totalPower = _hitPower * _hitPowerMultyplier;
+        float totalPower = _hitPower * _hitPowerMultiplier;
         _hitArea.transform.position = hitPosition;
         _forcePoint.transform.parent.position = hitPosition;
 
@@ -104,9 +112,15 @@ public class Hands : MonoBehaviour
         _animator.SetBool(IsMove, false);
     }
 
+    private void UpdateAttackSpeed()
+    {
+        _rightHandAnimator.speed = _baseAttackSpeed + _attackSpeed * _attackSpeedMultiplier;
+        _leftHandAnimator.speed = _baseAttackSpeed + _attackSpeed * _attackSpeedMultiplier;
+    }
+
     private void Start()
     {
-        Assert.IsNotNull(_hitEffect);
+        Assert.IsNotNull(_particlePool);
         Assert.IsNotNull(_popupReward);
         Assert.IsNotNull(_popupRewardCanvas);
         Assert.IsNotNull(_leftHand);
@@ -118,7 +132,12 @@ public class Hands : MonoBehaviour
         _animator = GetComponent<Animator>();
         _impulse = GetComponent<CinemachineImpulseSource>();
 
-        _rightHand.GetComponent<Animator>().SetFloat(CycleOffset, _rightHandCycleOffset);
+        _leftHandAnimator = _leftHand.GetComponent<Animator>();
+        _rightHandAnimator = _rightHand.GetComponent<Animator>();
+        _rightHandAnimator.SetFloat(CycleOffset, _cycleOffset);
+
+        UpdateAttackSpeed();
+
         Application.targetFrameRate = 1000;
     }
 

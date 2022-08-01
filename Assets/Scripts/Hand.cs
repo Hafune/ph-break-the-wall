@@ -12,9 +12,9 @@ public class Hand : MonoBehaviour
     private static readonly int IsMove = Animator.StringToHash("IsMove");
     private static readonly int HitSupport = Animator.StringToHash("HitSupport");
 
-    public Action _onHitCompleted;
-
     [SerializeField] private UnityEvent<Vector3> _onHit;
+
+    public Action _onHitCompleted;
 
     private Animator _animator;
     private Vector3 _defaultPosition;
@@ -52,7 +52,7 @@ public class Hand : MonoBehaviour
 
         yield return skipFrame;
 
-        float time = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
+        float time = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.length / _animator.speed;
         float halfTime = time / 2;
 
         var sequence = DOTween.Sequence();
