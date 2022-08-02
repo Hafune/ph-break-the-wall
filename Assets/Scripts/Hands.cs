@@ -10,9 +10,10 @@ public class Hands : MonoBehaviour
     
     private const float BaseAttackSpeed = .7f;
     private const float AttackSpeedMultiplier = .1f;
-    private const float HitPowerMultiplier = 2.5f;
+    private const float HitPowerMultiplier = 1.7f;
     private const float CycleOffsetValue = .1f;
     private const float ForceDistanceMultiplier = 20;
+    private const float FrictionDelimiterPerHit = 4;
 
     [SerializeField] private Camera _camera;
     [SerializeField] private Canvas _popupRewardCanvas;
@@ -97,8 +98,9 @@ public class Hands : MonoBehaviour
             body.isKinematic = false;
             body.mass = 100;
             var collider = body.GetComponent<Collider>();
-            collider.material.dynamicFriction = 0.1f;
-            collider.material.staticFriction = 0.1f;
+            var friction = collider.material.dynamicFriction / FrictionDelimiterPerHit;
+            collider.material.dynamicFriction = friction;
+            collider.material.staticFriction = friction;
             body.AddExplosionForce(totalPower, _forcePoint.position, _explosionRadius, 0f, ForceMode.VelocityChange);
         }
     }
