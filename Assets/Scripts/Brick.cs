@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(Rigidbody))]
 public class Brick : MonoBehaviour, IPointerDownHandler
 {
     private UnityEvent<Vector3> _onHit;
@@ -11,7 +12,7 @@ public class Brick : MonoBehaviour, IPointerDownHandler
     private Camera _camera;
     private Vector3 _basePosition;
     private bool _inWall = true;
-    private float _outOfWallDistance;
+    private float _outOfWallDistance = 1f;
 
     public void SetOnHitEvent(UnityEvent<Vector3> onHit) => _onHit = onHit;
 
@@ -30,7 +31,6 @@ public class Brick : MonoBehaviour, IPointerDownHandler
     private void Start()
     {
         _basePosition = transform.position;
-        _outOfWallDistance = GetComponent<Collider>().bounds.size.sqrMagnitude;
     }
 
     private void OnCollisionEnter()
@@ -38,8 +38,8 @@ public class Brick : MonoBehaviour, IPointerDownHandler
         if (!_inWall)
             return;
 
-        _inWall = (_basePosition - transform.position).sqrMagnitude < _outOfWallDistance;
-
+        _inWall = (_basePosition - transform.position).magnitude < _outOfWallDistance;
+        
         if (!_inWall)
             _onOutOfWall.Invoke();
     }
