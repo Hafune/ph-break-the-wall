@@ -21,11 +21,10 @@ public class Hand : MonoBehaviour
     private Quaternion _defaultRotation;
     private Transform _pivot;
     private float _defaultDistance;
+    private float _maxDistance;
     private bool _isReady = true;
 
     public bool IsReady => _isReady;
-
-    public Vector3 Position => _animator.transform.position;
 
     public void HitTo(Vector3 position)
     {
@@ -44,7 +43,7 @@ public class Hand : MonoBehaviour
         _isReady = false;
 
         var direction = position - _pivot.position;
-        float distance = direction.magnitude - _defaultDistance;
+        float distance = Mathf.Min(_maxDistance - _defaultDistance,direction.magnitude - _defaultDistance);
         var newPosition = _pivot.position + direction.normalized * distance;
         var skipFrame = new WaitForNextFrameUnit();
 
@@ -56,12 +55,10 @@ public class Hand : MonoBehaviour
         float halfTime = time / 2;
 
         var sequence = DOTween.Sequence();
-        sequence.Append(_pivot.DOMove(newPosition, halfTime)
-                .OnComplete(() => _onHit.Invoke(position)))
-            .Append(_pivot.DOLocalMove(_defaultPosition, halfTime));
-
-        sequence.Insert(0, _pivot.DOLookAt(position, halfTime))
-            .Append(_pivot.DORotateQuaternion(_defaultRotation, halfTime));
+        sequence.Append(_pivot.DOMove(newPosition, halfTime))
+            .Join(_pivot.DOLookAt(position, halfTime).OnComplete(() => _onHit.Invoke(position)))
+            .Append(_pivot.DOLocalMove(_defaultPosition, halfTime))
+            .Join(_pivot.DORotateQuaternion(_defaultRotation, halfTime));
 
         sequence.OnComplete(() =>
         {
@@ -81,5 +78,6 @@ public class Hand : MonoBehaviour
         Physics.Raycast(_pivot.position, _pivot.forward, out RaycastHit info);
 
         _defaultDistance = info.distance;
+        _maxDistance = _defaultDistance * 1.5f;
     }
 }

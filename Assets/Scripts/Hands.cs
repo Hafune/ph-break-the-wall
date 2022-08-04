@@ -7,13 +7,13 @@ public class Hands : MonoBehaviour
 {
     private static readonly int IsMove = Animator.StringToHash("IsMove");
     private static readonly int CycleOffset = Animator.StringToHash("CycleOffset");
-    
+
     private const float BaseAttackSpeed = .7f;
     private const float AttackSpeedMultiplier = .1f;
     private const float HitPowerMultiplier = 1.7f;
     private const float CycleOffsetValue = .1f;
     private const float ForceDistanceMultiplier = 20;
-    private const float FrictionDelimiterPerHit = 4;
+    private const float FrictionDelimiterPerHit = 6;
 
     [SerializeField] private Camera _camera;
     [SerializeField] private Canvas _popupRewardCanvas;
@@ -34,6 +34,9 @@ public class Hands : MonoBehaviour
     private Vector3 _nextHitPosition;
     private bool _hasNextHit;
     private float _explosionRadius;
+    private Hand _currentActiveHand;
+    private int _currentHitCount;
+    private int _maxHitCount = 2;
 
     public int HitPower => _hitPower;
 
@@ -59,10 +62,8 @@ public class Hands : MonoBehaviour
             return;
         }
 
-        var leftDistance = (position - _leftHand.Position).sqrMagnitude;
-        var rightDistance = (position - _rightHand.Position).sqrMagnitude;
 
-        if (leftDistance < rightDistance)
+        if (_currentActiveHand == _leftHand)
         {
             _rightHand.PlayHitSupportAnimation();
             _leftHand.HitTo(position);
@@ -72,6 +73,16 @@ public class Hands : MonoBehaviour
             _leftHand.PlayHitSupportAnimation();
             _rightHand.HitTo(position);
         }
+
+        _currentHitCount++;
+
+        if (_currentHitCount < _maxHitCount) 
+            return;
+        
+        _currentHitCount = 0;
+        _maxHitCount = (int) (1.5f + Random.value);
+
+        _currentActiveHand = _currentActiveHand == _leftHand ? _rightHand : _leftHand;
     }
 
     public void LaunchHitProcesses(Vector3 hitPosition)
@@ -146,10 +157,11 @@ public class Hands : MonoBehaviour
         UpdateAttackSpeed();
 
         _explosionRadius = _forcePoint.localPosition.magnitude * ForceDistanceMultiplier;
+        _currentActiveHand = _rightHand;
         Application.targetFrameRate = 1000;
     }
 
-    private void CheckNextHit()
+    private void RunNextHitIfExist()
     {
         if (!_hasNextHit)
             return;
@@ -160,13 +172,13 @@ public class Hands : MonoBehaviour
 
     private void OnEnable()
     {
-        _leftHand._onHitCompleted += CheckNextHit;
-        _rightHand._onHitCompleted += CheckNextHit;
+        _leftHand._onHitCompleted += RunNextHitIfExist;
+        _rightHand._onHitCompleted += RunNextHitIfExist;
     }
 
     private void OnDisable()
     {
-        _leftHand._onHitCompleted -= CheckNextHit;
-        _rightHand._onHitCompleted -= CheckNextHit;
+        _leftHand._onHitCompleted -= RunNextHitIfExist;
+        _rightHand._onHitCompleted -= RunNextHitIfExist;
     }
 }
