@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Lib;
 using UnityEngine;
@@ -21,14 +18,6 @@ public class JellyTank : MonoBehaviour
             .OrderBy(_gameObject => int.Parse(_gameObject.name.Replace(key, "").Replace("_", "")))
             .ToArray();
 
-        // var Edge_L_ = FindTracks("Edge_L_");
-        // var Edge_R = FindTracks("Edge_R");
-        // var Middle_ = FindTracks("Middle_");
-        // var Middle_L = FindTracks("Middle_L");
-        // var Middle_R = FindTracks("Middle_R");
-        // var Side_L = FindTracks("Side_L");
-        // var Side_R = FindTracks("Side_R");
-
         void SetupConnections(GameObject[] tracks) => tracks.ForEachIndexed((track, i) =>
         {
             var springs = track.GetComponents<SpringJoint>();
@@ -41,13 +30,6 @@ public class JellyTank : MonoBehaviour
         trackNames
             .Select(FindTracks)
             .ForEach(SetupConnections);
-        // SetupConnections(Edge_L_);
-        // SetupConnections(Edge_R);
-        // SetupConnections(Middle_);
-        // SetupConnections(Middle_L);
-        // SetupConnections(Middle_R);
-        // SetupConnections(Side_L);
-        // SetupConnections(Side_R);
 
         GetComponentsInChildren<ConfigurableJoint>().ForEach(joint =>
             joint.axis = joint.transform.InverseTransformDirection(joint.transform.localPosition.Copy(x: 0f)));
