@@ -38,6 +38,15 @@ namespace Lib
             }
         }
 
+        public static void ForEachIndexed<T>(this IEnumerable<T> list, Action<T, int> callback)
+        {
+            int count = 0;
+            foreach (var item in list)
+            {
+                callback.Invoke(item, count++);
+            }
+        }
+
         public static Vector3 Copy(this Vector3 vector, float? x = null, float? y = null, float? z = null) =>
             new Vector3(
                 x ?? vector.x,
