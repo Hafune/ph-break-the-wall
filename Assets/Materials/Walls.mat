@@ -12,7 +12,7 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _ALLOWALPHAOVERFLOW_OFF
-  - _CELPRIMARYMODE_NONE
+  - _CELPRIMARYMODE_SINGLE
   - _TEXTUREBLENDINGMODE_MULTIPLY
   - _UNITYSHADOWMODE_NONE
   m_LightmapFlags: 4
@@ -86,7 +86,7 @@ Material:
     - _CameraDistanceFadeFar: 10
     - _CelExtraEnabled: 0
     - _CelNumSteps: 3
-    - _CelPrimaryMode: 0
+    - _CelPrimaryMode: 1
     - _Cull: 2
     - _Cutoff: 0.5
     - _Depth: 100
@@ -144,12 +144,12 @@ Material:
     - _WireThickness: 100
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.15294118, g: 0.101960786, b: 0.2, a: 1}
+    - _Color: {r: 0.22013605, g: 0.07115523, b: 0.38679248, a: 1}
     - _ColorDim: {r: 0.086553186, g: 0.055297874, b: 0.113000005, a: 1}
     - _ColorDimCurve: {r: 0.15294118, g: 0.101960786, b: 0.2, a: 1}
     - _ColorDimExtra: {r: 0.13473135, g: 0.08717911, b: 0.177, a: 1}
     - _ColorDimSteps: {r: 0.15294118, g: 0.101960786, b: 0.2, a: 1}
-    - _ColorGradient: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
+    - _ColorGradient: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlatRimColor: {r: 0.13473135, g: 0.08717911, b: 0.177, a: 1}
     - _FlatSpecularColor: {r: 0.13473135, g: 0.08717911, b: 0.177, a: 1}

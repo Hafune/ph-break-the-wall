@@ -11,7 +11,7 @@ public class Wall : MonoBehaviour
 
     private Brick[] _bricks;
     private float _outOfWallBrickCount;
-    private float _percentToDestroy = .4f;
+    private float _bricksToDestroy = 60f;
     private bool _wallIsBroken = false;
 
     private void Start()
@@ -31,7 +31,7 @@ public class Wall : MonoBehaviour
 
     private void CheckBricks()
     {
-        if (_wallIsBroken || _outOfWallBrickCount / _bricks.Length < _percentToDestroy)
+        if (_wallIsBroken || _outOfWallBrickCount < _bricksToDestroy)
             return;
 
         _wallIsBroken = true;

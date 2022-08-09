@@ -8,7 +8,7 @@ public class Hands : MonoBehaviour
     private static readonly int IsMove = Animator.StringToHash("IsMove");
     private static readonly int CycleOffset = Animator.StringToHash("CycleOffset");
 
-    private const float BaseAttackSpeed = .7f;
+    private const float BaseAttackSpeed = .4f;
     private const float AttackSpeedMultiplier = .1f;
     private const float HitPowerMultiplier = 1.7f;
     private const float CycleOffsetValue = .1f;
