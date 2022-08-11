@@ -11,7 +11,7 @@ public class Wall : MonoBehaviour
 
     private Brick[] _bricks;
     private float _outOfWallBrickCount;
-    private float _bricksToDestroy = 60f;
+    private float _bricksToDestroy = 70f;
     private bool _wallIsBroken = false;
 
     private void Start()
