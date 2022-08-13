@@ -43,7 +43,7 @@ public class Wall : MonoBehaviour
 
     private IEnumerator DestroyWall()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(5);
         Destroy(gameObject);
     }
 }

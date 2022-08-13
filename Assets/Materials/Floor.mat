@@ -87,7 +87,7 @@ Material:
     - _Flatness: 1
     - _FlatnessExtra: 1
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0.3
     - _GlossyReflections: 1
     - _GradientAngle: 0
     - _GradientCenterX: 0
@@ -122,7 +122,7 @@ Material:
     - _VertexColorsEnabled: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.155202, g: 0.10524057, b: 0.201, a: 1}
+    - _Color: {r: 0.108333305, g: 0, b: 0.2, a: 1}
     - _ColorDim: {r: 0.14005971, g: 0.090626866, b: 0.184, a: 1}
     - _ColorDimCurve: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
     - _ColorDimExtra: {r: 0.13473135, g: 0.08717911, b: 0.177, a: 1}

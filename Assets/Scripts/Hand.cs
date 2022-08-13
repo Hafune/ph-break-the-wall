@@ -29,7 +29,7 @@ public class Hand : MonoBehaviour
     public void HitTo(Vector3 position)
     {
         if (_isReady)
-            StartCoroutine(DealHit(position));
+            StartCoroutine(BeginHit(position));
     }
 
     public void SetMoveAnimation() => _animator.SetBool(IsMove, true);
@@ -38,11 +38,11 @@ public class Hand : MonoBehaviour
 
     public void PlayHitSupportAnimation() => _animator.SetTrigger(HitSupport);
 
-    private IEnumerator DealHit(Vector3 position)
+    private IEnumerator BeginHit(Vector3 hitPosition)
     {
         _isReady = false;
 
-        var direction = position - _pivot.position;
+        var direction = hitPosition - _pivot.position;
         float distance = Mathf.Min(_maxDistance - _defaultDistance,direction.magnitude - _defaultDistance);
         var newPosition = _pivot.position + direction.normalized * distance;
         var skipFrame = new WaitForNextFrameUnit();
@@ -53,10 +53,9 @@ public class Hand : MonoBehaviour
 
         float time = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.length / _animator.speed;
         float halfTime = time / 2;
-
         var sequence = DOTween.Sequence();
         sequence.Append(_pivot.DOMove(newPosition, halfTime))
-            .Join(_pivot.DOLookAt(position, halfTime).OnComplete(() => _onHit.Invoke(position)))
+            .Join(_pivot.DOLookAt(hitPosition, halfTime).OnComplete(() => _onHit.Invoke(hitPosition)))
             .Append(_pivot.DOLocalMove(_defaultPosition, halfTime))
             .Join(_pivot.DORotateQuaternion(_defaultRotation, halfTime));
 
@@ -75,9 +74,9 @@ public class Hand : MonoBehaviour
         _defaultPosition = _pivot.localPosition;
         _defaultRotation = _pivot.rotation;
 
-        Physics.Raycast(_pivot.position, _pivot.forward, out RaycastHit info);
+        Physics.SphereCast(_pivot.position, 1f, _pivot.forward, out RaycastHit info);
 
-        _defaultDistance = info.distance;
+        _defaultDistance = info.distance - .5f;
         _maxDistance = _defaultDistance * 1.5f;
     }
 }

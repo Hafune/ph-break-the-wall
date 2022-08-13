@@ -10,10 +10,10 @@ public class Hands : MonoBehaviour
 
     private const float BaseAttackSpeed = .4f;
     private const float AttackSpeedMultiplier = .1f;
-    private const float HitPowerMultiplier = 10f;
+    private const float HitPowerMultiplier = 4f;
     private const float CycleOffsetValue = .1f;
     private const float ForceDistanceMultiplier = 20;
-    private const float FrictionPerHitMultiplier = .4f;
+    private const float FrictionPerHitMultiplier = .2f;
 
     [SerializeField] private Camera _camera;
     [SerializeField] private Canvas _popupRewardCanvas;
@@ -21,7 +21,7 @@ public class Hands : MonoBehaviour
     [SerializeField] private Hand _leftHand;
     [SerializeField] private Hand _rightHand;
     [SerializeField] private ParticlePool _particlePool;
-    [SerializeField] private PopupReward _popupReward;
+    [SerializeField] private GameObject _popupReward;
     [SerializeField] private Transform _forcePoint;
     [SerializeField] private int _attackSpeed = 3;
     [SerializeField] private int _hitPower = 4;
@@ -76,9 +76,9 @@ public class Hands : MonoBehaviour
 
         _currentHitCount++;
 
-        if (_currentHitCount < _maxHitCount) 
+        if (_currentHitCount < _maxHitCount)
             return;
-        
+
         _currentHitCount = 0;
         _maxHitCount = (int) (1.5f + Random.value);
 
@@ -107,12 +107,13 @@ public class Hands : MonoBehaviour
                 continue;
 
             body.isKinematic = false;
-            body.mass = 100;
+            body.mass = 10;
             var collider = body.GetComponent<Collider>();
+            body.AddExplosionForce(totalPower - totalPower * collider.material.dynamicFriction * .9f,
+                _forcePoint.position, _explosionRadius, 0f, ForceMode.VelocityChange);
             var friction = collider.material.dynamicFriction * FrictionPerHitMultiplier;
             collider.material.dynamicFriction = friction;
             collider.material.staticFriction = friction;
-            body.AddExplosionForce(totalPower, _forcePoint.position, _explosionRadius, 0f, ForceMode.VelocityChange);
         }
     }
 
