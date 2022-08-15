@@ -17,7 +17,7 @@ public class MoveToNextWall : MonoBehaviour
     private IEnumerator BeginMovementAnimation()
     {
         _onWallBreak.Invoke();
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1.2f);
         _hands.SetMoveAnimation();
         transform.DOMove(_nextPosition.transform.position - _positionFromWall, 3f)
             .OnComplete(() => _hands.SetIdleAnimation());
