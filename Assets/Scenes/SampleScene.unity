@@ -11725,6 +11725,7 @@ GameObject:
   - component: {fileID: 929267793}
   - component: {fileID: 929267792}
   - component: {fileID: 929267791}
+  - component: {fileID: 929267794}
   m_Layer: 5
   m_Name: ExclamationMark
   m_TagString: Untagged
@@ -11810,6 +11811,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 929267789}
   m_CullTransparentMesh: 1
+--- !u!114 &929267794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 929267789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33551c3e243f2cd4494fd33f452fd765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &932754555 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7574703207393353081, guid: 5bbf1297fbca0c54cbd70019fab3cb05, type: 3}
@@ -13270,6 +13283,18 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 929267794}
+        m_TargetAssemblyTypeName: ExclamationMark, Assembly-CSharp
+        m_MethodName: BeginHideAnimation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Hidden
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 0
